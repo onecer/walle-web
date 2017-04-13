@@ -174,8 +174,7 @@ class Task extends \yii\db\ActiveRecord
         if ($this->file_transmission_mode == static::FILE_TRANSMISSION_MODE_FULL) {
             return '.';
         } elseif ($this->file_transmission_mode == static::FILE_TRANSMISSION_MODE_PART && $this->file_list) {
-
-            $fileList = GlobalHelper::str2arr($this->file_list);
+            $fileList = GlobalHelper::str2arr(str_replace("\\","/",$this->file_list));
             $commandFiles = join(' ', $fileList);
 
             return trim($commandFiles);
