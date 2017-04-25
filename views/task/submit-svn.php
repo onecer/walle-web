@@ -161,7 +161,7 @@ use app\models\Task;
 
                 var select = '';
                 $.each(data.data, function (key, value) {
-                    select += '<option value="' + value.id + '">' + value.id + ' - ' + value.message + '</option>';
+                    select += '<option value="' + value.id + '">' + value.id + ' - ' + value.author + ' : ' + value.message + '</option>';
                 });
                 $('#task-commit_id').html(select);
                 $('.get-history').hide()
