@@ -87,7 +87,7 @@ use app\models\Task;
                           'style'          => 'display: none',
                       ])
                       ->label(yii::t('task', 'file list'),
-                          ['class' => 'control-label bolder blue', 'style' => '']) ?>
+                          ['class' => 'control-label bolder blue', 'style' => 'display: none']) ?>
               </div>
           </div>
       </div><!-- /.box-body -->
@@ -242,11 +242,11 @@ use app\models\Task;
         // 切换显示文件列表
         $('body').on('click', '#transmission-full-ctl', function() {
             $('#task-part_block').hide();
-//            $('#task-file_list').hide();
+            $('#task-file_list').hide();
             $('label[for="task-file_list"]').hide();
         }).on('click', '#transmission-part-ctl', function() {
             $('#task-part_block').show();
-//            $('#task-file_list').show();
+            $('#task-file_list').show();
             $('label[for="task-file_list"]').show();
         });
     })
