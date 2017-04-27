@@ -67,21 +67,29 @@ use app\models\Task;
           </div>
           <!-- 全量/增量 end -->
           <!-- 两次提交的文件列表 -->
-          <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表" style="display: none"></textarea>
-          <!-- 文件列表 -->
-          <?= $form->field($task, 'file_list')
-              ->textarea([
-                  'rows'           => 12,
-                  'placeholder'    => "index.php\nREADME.md\ndir_name\nfile*",
-                  'data-html'      => 'true',
-                  'data-placement' => 'top',
-                  'data-rel'       => 'tooltip',
-                  'data-title'     => yii::t('task', 'file list placeholder'),
-                  'style'          => 'display: none',
-              ])
-              ->label(yii::t('task', 'file list'),
-                  ['class' => 'control-label bolder blue', 'style' => 'display: none']) ?>
-
+          <div class="container">
+              <div class="col-xs-5">
+                  <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表" style="display: none"></textarea>
+              </div>
+              <div class="col-xs-2">
+                  <a href="http://placehold.it"><img src="http://placehold.it/150x350"></a>
+              </div>
+              <div class="col-xs-5">
+                  <!-- 文件列表 -->
+                  <?= $form->field($task, 'file_list')
+                      ->textarea([
+                          'rows'           => 12,
+                          'placeholder'    => "index.php\nREADME.md\ndir_name\nfile*",
+                          'data-html'      => 'true',
+                          'data-placement' => 'top',
+                          'data-rel'       => 'tooltip',
+                          'data-title'     => yii::t('task', 'file list placeholder'),
+                          'style'          => 'display: none',
+                      ])
+                      ->label(yii::t('task', 'file list'),
+                          ['class' => 'control-label bolder blue', 'style' => 'display: none']) ?>
+              </div>
+          </div>
       </div><!-- /.box-body -->
 
       <div class="box-footer">
