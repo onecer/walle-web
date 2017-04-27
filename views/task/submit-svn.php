@@ -67,12 +67,12 @@ use app\models\Task;
           </div>
           <!-- 全量/增量 end -->
           <!-- 两次提交的文件列表 -->
-          <div class="container">
+          <div class="container" id="task-part_block" style="display: none">
               <div class="col-xs-5">
-                  <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表" style="display: none"></textarea>
+                  <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表"></textarea>
               </div>
               <div class="col-xs-2">
-                  <a href="http://placehold.it"><img src="http://placehold.it/150x350"></a>
+                  <a href="#"><img src="http://placehold.it/150x350"></a>
               </div>
               <div class="col-xs-5">
                   <!-- 文件列表 -->
@@ -87,7 +87,7 @@ use app\models\Task;
                           'style'          => 'display: none',
                       ])
                       ->label(yii::t('task', 'file list'),
-                          ['class' => 'control-label bolder blue', 'style' => 'display: none']) ?>
+                          ['class' => 'control-label bolder blue', 'style' => '']) ?>
               </div>
           </div>
       </div><!-- /.box-body -->
@@ -241,11 +241,12 @@ use app\models\Task;
 
         // 切换显示文件列表
         $('body').on('click', '#transmission-full-ctl', function() {
-            $('#task-file_list').hide();
+            $('#task-part_block').hide();
+//            $('#task-file_list').hide();
             $('label[for="task-file_list"]').hide();
         }).on('click', '#transmission-part-ctl', function() {
-            $('#task-commit_file_list').show();
-            $('#task-file_list').show();
+            $('#task-part_block').show();
+//            $('#task-file_list').show();
             $('label[for="task-file_list"]').show();
         });
     })
