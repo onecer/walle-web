@@ -230,5 +230,4 @@ class TaskController extends Controller
         $task->save();
         static::renderJson(['status' => \Yii::t('w', 'task_status_' . $task->status)]);
     }
-
 }
