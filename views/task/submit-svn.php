@@ -67,19 +67,7 @@ use app\models\Task;
           </div>
           <!-- 全量/增量 end -->
           <!-- 两次提交的文件列表 -->
-          <?=
-            $form->field($task,'commit_file_list')
-                ->textarea([
-                'rows'           => 12,
-                'placeholder'    => "",
-                'data-html'      => 'true',
-                'data-placement' => 'top',
-                'data-rel'       => 'tooltip',
-                'data-title'     => yii::t('task', 'file list placeholder'),
-                'style'          => 'display: none',
-            ])
-          ?>
-
+          <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表" style="display: none"></textarea>
           <!-- 文件列表 -->
           <?= $form->field($task, 'file_list')
               ->textarea([
@@ -210,7 +198,7 @@ use app\models\Task;
 
         // 页面加载完默认拉取项目最后一次commit和最新一次commit之间的文件列表
         getCommitBetweenList();
-        0
+
         // 查看所有分支提示
         $('.show-tip')
             .hover(
