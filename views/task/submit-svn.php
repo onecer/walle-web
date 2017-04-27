@@ -69,6 +69,7 @@ use app\models\Task;
           <!-- 两次提交的文件列表 -->
           <div class="container" id="task-part_block" style="display: none">
               <div class="col-xs-5">
+                  <label class="control-label bolder blue" style="display: inline-block;">Commit文件列表</label>
                   <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表"></textarea>
               </div>
               <div class="col-xs-2">
