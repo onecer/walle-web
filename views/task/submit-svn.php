@@ -16,6 +16,7 @@ use app\models\Task;
     text-align:left;
 }
 </style>
+<link rel="stylesheet" href="/dist/css/bootstrap-treeview.min.css">
 <div class="box">
     <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
       <div class="box-body">
@@ -66,8 +67,44 @@ use app\models\Task;
               </div>
           </div>
           <!-- 全量/增量 end -->
+          <!-- 控制区 -->
+          <div class="row">
+              <div class="col-sm-4">
+                  <div class="row"><label class="control-label bolder blue" style="display: inline-block;">搜索更改文件</label></div>
+                  <div class="row">
+                      <div class="row">
+                          <div class="col-sm-8">
+                              <div class="form-group">
+                                  <label for="input-select-node" class="sr-only">Search Tree:</label>
+                                  <input type="input" class="form-control input-lg" id="input-select-node" placeholder="关键词" value="">
+                              </div>
+                          </div>
+                          <div class="col-sm-2">
+                              <div class="form-group">
+                                  <button type="button" class="btn btn-success select-node" id="btn-select-node">选定</button>
+                              </div>
+                          </div>
+                          <div class="col-sm-2">
+                              <div class="form-group">
+                                  <button type="button" class="btn btn-danger select-node" id="btn-unselect-node">取消</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row"><label class="control-label bolder blue" style="display: inline-block;">更改文件目录树</label></div>
+                  <div class="row">
+                      <div id="treeview-selectable" class=""></div>
+                  </div>
+
+              </div>
+              <div class="col-sm-2"><button type="button" class="btn btn-primary select-node" id="btn-add-selected" >添加选定</button></div>
+              <div class="col-sm-6">
+                  <div class="row"><label class="control-label bolder blue" style="display: inline-block;">增量更新文件列表</label></div>
+                  <div class="row"><textarea id="commit-update-list" name="commit-update-list" class="form-control" id="" cols="30" rows="15"></textarea></div>
+              </div>
+          </div>
           <!-- 两次提交的文件列表 -->
-          <div class="container" id="task-part_block" style="display: none">
+          <div class="row" id="task-part_block" style="display: none">
               <div class="col-xs-5">
                   <label class="control-label bolder blue" style="display: inline-block;">Commit文件列表</label>
                   <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表"></textarea>
@@ -251,5 +288,94 @@ use app\models\Task;
             $('label[for="task-file_list"]').show();
         });
     })
+
+</script>
+<script src="/dist/js/bootstrap-treeview.min.js"></script>
+<script>
+    var tree = [
+        {
+            text: "Application",
+            nodes: [
+                {
+                    text: "Common",
+                    nodes: [
+                        {
+                            text: "Conf"
+                        },
+                        {
+                            text: "Conf"
+                        }
+                    ]
+                },
+                {
+                    text: "Crm"
+                }
+            ]
+        },
+        {
+            text: "Uploads"
+        },
+        {
+            text: "index.php"
+        }
+    ];
+//    $('#treeview-selectable').treeview({
+//        data:tree,
+//        "expandIcon":"icon-folder-close-alt",
+//        "collapseIcon":"icon-folder-open-alt",
+//        "multiSelect":"true"
+//    });
+
+    var initSelectableTree = function() {
+        return $('#treeview-selectable').treeview({
+            data: tree,
+            "expandIcon":"icon-folder-close-alt",
+            "collapseIcon":"icon-folder-open-alt",
+            multiSelect: true
+        });
+    };
+    var $selectableTree = initSelectableTree();
+
+    var findSelectableNodes = function() {
+        return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
+    };
+    var selectableNodes = findSelectableNodes();
+
+
+    // Select/unselect
+    $('#input-select-node').on('keyup', function (e) {
+        selectableNodes = findSelectableNodes();
+        $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
+    });
+
+    $('#btn-select-node.select-node').on('click', function (e) {
+        $selectableTree.treeview('selectNode', [ selectableNodes, { silent: true }]);
+    });
+
+    $('#btn-unselect-node.select-node').on('click', function (e) {
+        $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: true }]);
+    });
+
+    $('#btn-add-selected.select-node').on('click', function (e) {
+//        var selectData = $selectableTree.treeview('getSelected');
+        var parentNode = $selectableTree.treeview('getParent',3);
+        var selectJson = "";
+        selectJson=JSON.stringify(parentNode);
+        var fileLists="";
+        var filePath="";
+        $.each(selectJson,function (index,content) {
+            filePath += content["text"];
+            // 如果有父节点
+            if (content.hasOwnProperty('parentId')){
+                while (){
+
+                }
+            } else {
+                fileLists = filelists + "\n";
+            }
+        });
+
+        $('#commit-update-list').val(selectJson);
+    });
 
 </script>
