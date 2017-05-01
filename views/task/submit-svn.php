@@ -325,7 +325,10 @@ use app\models\Task;
 //        "collapseIcon":"icon-folder-open-alt",
 //        "multiSelect":"true"
 //    });
-
+    // 生成treeview数组
+    function makeTreeviewJson(sList){
+        
+    }
     var initSelectableTree = function() {
         return $('#treeview-selectable').treeview({
             data: tree,
@@ -356,26 +359,36 @@ use app\models\Task;
         $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: true }]);
     });
 
-    $('#btn-add-selected.select-node').on('click', function (e) {
-//        var selectData = $selectableTree.treeview('getSelected');
-        var parentNode = $selectableTree.treeview('getParent',3);
-        var selectJson = "";
-        selectJson=JSON.stringify(parentNode);
-        var fileLists="";
-        var filePath="";
-        $.each(selectJson,function (index,content) {
-            filePath += content["text"];
-            // 如果有父节点
-            if (content.hasOwnProperty('parentId')){
-                while (){
-
-                }
+    // 递归拼接节点路径
+    function getPathByNodeId(nodeId){
+        var nodeObj = $selectableTree.treeview('getParent',nodeId);
+        if("text" in nodeObj){
+            var filePath = nodeObj.text;
+            if(nodeObj.parentId!==undefined){
+                filePath = getPathByNodeId(nodeObj.nodeId) + '/' + filePath;
             } else {
-                fileLists = filelists + "\n";
+                return filePath;
             }
-        });
+        }else{
+            return "";
+        } 
+        return filePath;
+    }
 
-        $('#commit-update-list').val(selectJson);
+    // 添加选中项到右边列表
+    $('#btn-add-selected.select-node').on('click', function (e) {
+        var selectData = $selectableTree.treeview('getSelected');
+        var filelists="";
+//        var selectJson = eval(JSON.stringify(selectData));
+        for(var o in selectData){
+//            if("parentId" in selectJson[o]){
+            if(selectData[o].parentId!==undefined){
+                filelists = filelists + getPathByNodeId(selectData[o].nodeId) + "/" +selectData[o].text + "\r\n";
+            }else{
+                filelists = filelists + selectData[o].text + "\r\n";
+            }
+        }
+        $('#commit-update-list').val(filelists);
     });
 
 </script>
