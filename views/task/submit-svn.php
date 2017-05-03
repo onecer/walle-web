@@ -157,8 +157,64 @@ use app\models\Task;
     <?php ActiveForm::end(); ?>
 </div>
 
-<script type="text/javascript">
+<script src="/dist/js/bootstrap-treeview.min.js"></script>
+<script>
     var $selectableTree;
+
+    var initSelectableTree;
+
+
+    var findSelectableNodes;
+    var selectableNodes;
+
+
+    // Select/unselect
+    $('#input-select-node').on('keyup', function (e) {
+        selectableNodes = findSelectableNodes();
+        $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
+    });
+
+    $('#btn-select-node.select-node').on('click', function (e) {
+        $selectableTree.treeview('selectNode', [ selectableNodes, { silent: true }]);
+    });
+
+    $('#btn-unselect-node.select-node').on('click', function (e) {
+        $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: true }]);
+    });
+
+    // 递归拼接节点路径
+    function getPathByNodeId(nodeId){
+        var nodeObj = $selectableTree.treeview('getParent',nodeId);
+        if("text" in nodeObj){
+            var filePath = nodeObj.text;
+            if(nodeObj.parentId!==undefined){
+                filePath = getPathByNodeId(nodeObj.nodeId) + '/' + filePath;
+            } else {
+                return filePath;
+            }
+        }
+        return filePath;
+    }
+
+    // 添加选中项到右边列表
+    $('#btn-add-selected.select-node').on('click', function (e) {
+        var selectData = $selectableTree.treeview('getSelected');
+        var filelists="";
+//        var selectJson = eval(JSON.stringify(selectData));
+        for(var o in selectData){
+//            if("parentId" in selectJson[o]){
+            if(selectData[o].parentId!==undefined){
+                filelists = filelists + getPathByNodeId(selectData[o].nodeId) + "/" +selectData[o].text + "\r\n";
+            }else{
+                filelists = filelists + selectData[o].text + "\r\n";
+            }
+        }
+        $('#commit-update-list').val(filelists);
+    });
+
+</script>
+<script type="text/javascript">
+
     var tree = [];
     jQuery(function($) {
         $('[data-rel=tooltip]').tooltip({container:'body'});
@@ -228,8 +284,22 @@ use app\models\Task;
                     showError(data.msg);
                 }
                 tree = data.data;
+                initSelectableTree = function() {
+                    return $('#treeview-selectable').treeview({
+                        data: tree,
+                        "expandIcon":"icon-folder-close-alt",
+                        "collapseIcon":"icon-folder-open-alt",
+                        multiSelect: true
+                    });
+                };
                 $selectableTree = initSelectableTree();
-
+                findSelectableNodes = function() {
+                    return $selectableTree.treeview('search', [$('#input-select-node').val(), {
+                        ignoreCase: false,
+                        exactMatch: false
+                    }]);
+                }
+                selectableNodes = findSelectableNodes();
 //                var filePath='';
 //                $.each(data.data, function () {
 //                    filePath += this + '\n';
@@ -293,70 +363,5 @@ use app\models\Task;
             $('label[for="task-file_list"]').show();
         });
     })
-
-</script>
-<script src="/dist/js/bootstrap-treeview.min.js"></script>
-<script>
-
-
-    var initSelectableTree = function() {
-        return $('#treeview-selectable').treeview({
-            data: tree,
-            "expandIcon":"icon-folder-close-alt",
-            "collapseIcon":"icon-folder-open-alt",
-            multiSelect: true
-        });
-    };
-
-
-    var findSelectableNodes = function() {
-        return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
-    };
-    var selectableNodes = findSelectableNodes();
-
-
-    // Select/unselect
-    $('#input-select-node').on('keyup', function (e) {
-        selectableNodes = findSelectableNodes();
-        $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
-    });
-
-    $('#btn-select-node.select-node').on('click', function (e) {
-        $selectableTree.treeview('selectNode', [ selectableNodes, { silent: true }]);
-    });
-
-    $('#btn-unselect-node.select-node').on('click', function (e) {
-        $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: true }]);
-    });
-
-    // 递归拼接节点路径
-    function getPathByNodeId(nodeId){
-        var nodeObj = $selectableTree.treeview('getParent',nodeId);
-        if("text" in nodeObj){
-            var filePath = nodeObj.text;
-            if(nodeObj.parentId!==undefined){
-                filePath = getPathByNodeId(nodeObj.nodeId) + '/' + filePath;
-            } else {
-                return filePath;
-            }
-        }
-        return filePath;
-    }
-
-    // 添加选中项到右边列表
-    $('#btn-add-selected.select-node').on('click', function (e) {
-        var selectData = $selectableTree.treeview('getSelected');
-        var filelists="";
-//        var selectJson = eval(JSON.stringify(selectData));
-        for(var o in selectData){
-//            if("parentId" in selectJson[o]){
-            if(selectData[o].parentId!==undefined){
-                filelists = filelists + getPathByNodeId(selectData[o].nodeId) + "/" +selectData[o].text + "\r\n";
-            }else{
-                filelists = filelists + selectData[o].text + "\r\n";
-            }
-        }
-        $('#commit-update-list').val(filelists);
-    });
 
 </script>

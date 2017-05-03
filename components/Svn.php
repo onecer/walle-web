@@ -218,11 +218,13 @@ class Svn extends Command {
      */
     public function getFileBetweenCommitsJson($branch, $star, $end) {
         // 先获取更新列表
-        $tree=[];
+        $tree=array();
         $list=$this->getFileBetweenCommits($branch, $star, $end);
         for($i=0;$i<count($list);$i++){
-            $path_str=array_reverse(explode('/', $list[$i]));
-            $tree = $this->_pushNode($tree,$path_str);
+            if(!empty($list[$i])){
+                $path_str=array_reverse(explode('/', $list[$i]));
+                $tree = $this->_pushNode($tree,$path_str);
+            }
         }
         $json = $this->_makeCommitFilesTreeviewJson($tree);
         return json_encode($json);
@@ -302,6 +304,7 @@ class Svn extends Command {
             }else {
                 $tmpname=end($name);
                 array_pop($name);
+                $subtree[$tmpname]=array();
                 $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname], $name);
             }
             return $subtree;
