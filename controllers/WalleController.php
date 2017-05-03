@@ -338,6 +338,20 @@ class WalleController extends Controller
     }
 
     /**
+     * 获取commit之间的文件JSON
+     *
+     * @param $projectId
+     */
+    public function actionGetCommitFileJson($projectId, $start, $end, $branch = 'trunk')
+    {
+        $conf = Project::getConf($projectId);
+        $revision = Repo::getRevision($conf);
+        $list = $revision->getFileBetweenCommitsJson($branch, $start, $end);
+
+        $this->renderJson($list);
+    }
+
+    /**
      * 上线管理
      *
      * @param $taskId

@@ -208,6 +208,27 @@ class Svn extends Command {
     }
 
     /**
+     * 获取commit之间的文件返回JSON格式 BY Onecer
+     *
+     * @param $branch
+     * @param $star
+     * @param $end
+     * @return array
+     * @throws \Exception
+     */
+    public function getFileBetweenCommitsJson($branch, $star, $end) {
+        // 先获取更新列表
+        $tree=[];
+        $list=$this->getFileBetweenCommits($branch, $star, $end);
+        for($i=0;$i<count($list);$i++){
+            $path_str=array_reverse(explode('/', $list[$i]));
+            $tree = $this->_pushNode($tree,$path_str);
+        }
+        $json = $this->_makeCommitFilesTreeviewJson($tree);
+        return json_encode($json);
+    }
+
+    /**
      * 格式化svn log xml 2 array
      *
      * @param $xmlString
@@ -264,6 +285,46 @@ class Svn extends Command {
     private function _getSvnCmd($cmd) {
         return sprintf('/usr/bin/env LC_ALL=en_US.UTF-8 %s --username=%s --password=%s --non-interactive --trust-server-cert',
             $cmd, escapeshellarg($this->config->repo_username), escapeshellarg($this->config->repo_password));
+    }
+
+    /**
+     * 递归创建树
+     * @param $subtree
+     * @param $name
+     * @return array
+     */
+    private function _pushNode($subtree,$name){
+        if(!empty($name)){
+            if(array_key_exists(end($name),$subtree)){
+                $tmpname=end($name);
+                array_pop($name);
+                $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname],$name);
+            }else {
+                $tmpname=end($name);
+                array_pop($name);
+                $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname], $name);
+            }
+            return $subtree;
+        }
+    }
+
+    /**
+     * @param $tree
+     * @return array
+     */
+    private function _makeCommitFilesTreeviewJson($tree){
+        $json=[];
+        if(!empty($tree)){
+            foreach ($tree as $key => $value){
+                $jsonNode=[];
+                $jsonNode['text']=$key;
+                if($value!==null){
+                    $jsonNode['nodes']=$this->_makeCommitFilesTreeviewJson($value);
+                }
+                array_push($json,$jsonNode);
+            }
+        }
+        return $json;
     }
 
 }

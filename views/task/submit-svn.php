@@ -158,6 +158,8 @@ use app\models\Task;
 </div>
 
 <script type="text/javascript">
+    var $selectableTree;
+    var tree = [];
     jQuery(function($) {
         $('[data-rel=tooltip]').tooltip({container:'body'});
 
@@ -220,16 +222,19 @@ use app\models\Task;
             // 还需获取最新记录和最后提交的记录
             var startNum=2950;
             var endNum=2982;
-            $.get("<?= Url::to('@web/walle/get-commit-file?projectId=') ?>" + projectId + "&start=" + startNum + "&end=" + endNum + "&branch=" + $('#branch').val(), function (data) {
+            $.get("<?= Url::to('@web/walle/get-commit-file-json?projectId=') ?>" + projectId + "&start=" + startNum + "&end=" + endNum + "&branch=" + $('#branch').val(), function (data) {
                 // 获取失败
                 if (data.code) {
                     showError(data.msg);
                 }
-                var filePath='';
-                $.each(data.data, function () {
-                    filePath += this + '\n';
-                });
-                $('#task-commit_file_list').val(filePath);
+                tree = data.data;
+                $selectableTree = initSelectableTree();
+
+//                var filePath='';
+//                $.each(data.data, function () {
+//                    filePath += this + '\n';
+//                });
+//                $('#task-commit_file_list').val(filePath);
             });
         }
 
@@ -292,43 +297,8 @@ use app\models\Task;
 </script>
 <script src="/dist/js/bootstrap-treeview.min.js"></script>
 <script>
-    var tree = [
-        {
-            text: "Application",
-            nodes: [
-                {
-                    text: "Common",
-                    nodes: [
-                        {
-                            text: "Conf"
-                        },
-                        {
-                            text: "Conf"
-                        }
-                    ]
-                },
-                {
-                    text: "Crm"
-                }
-            ]
-        },
-        {
-            text: "Uploads"
-        },
-        {
-            text: "index.php"
-        }
-    ];
-//    $('#treeview-selectable').treeview({
-//        data:tree,
-//        "expandIcon":"icon-folder-close-alt",
-//        "collapseIcon":"icon-folder-open-alt",
-//        "multiSelect":"true"
-//    });
-    // 生成treeview数组
-    function makeTreeviewJson(sList){
-        
-    }
+
+
     var initSelectableTree = function() {
         return $('#treeview-selectable').treeview({
             data: tree,
@@ -337,7 +307,7 @@ use app\models\Task;
             multiSelect: true
         });
     };
-    var $selectableTree = initSelectableTree();
+
 
     var findSelectableNodes = function() {
         return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
@@ -369,9 +339,7 @@ use app\models\Task;
             } else {
                 return filePath;
             }
-        }else{
-            return "";
-        } 
+        }
         return filePath;
     }
 
