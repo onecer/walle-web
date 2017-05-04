@@ -346,8 +346,8 @@ class WalleController extends Controller
     {
         $conf = Project::getConf($projectId);
         $revision = Repo::getRevision($conf);
+        $start = !empty($start) ? $start : TaskModel::find()->select('commit_id')->where(['project_id'=>$projectId])->orderBy(['id'=>SORT_DESC])->limit(1)->scalar();
         $list = $revision->getFileBetweenCommitsJson($branch, $start, $end);
-
         $this->renderJson($list);
     }
 

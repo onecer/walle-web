@@ -192,4 +192,12 @@ class Task extends \yii\db\ActiveRecord
         return $this->ex_link_id ? static::find()->where(['link_id'=>$this->ex_link_id])->orderBy(['id'=>SORT_ASC])->select('commit_id')->scalar():'';
     }
 
+    /**
+     * @param $projectId
+     * @return integer
+     */
+//    public function getLastDeployId($projectId){
+//        return $projectId ? static::find()->where(['project_id'=>$projectId])->orderBy(['id'=>SORT_DESC])->select('commit_id')->scalar():1;
+//    }
+
 }

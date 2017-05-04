@@ -203,6 +203,7 @@ use app\models\Task;
 <script type="text/javascript">
 
     var tree = [];
+    var lastCommitId;
     jQuery(function($) {
         $('[data-rel=tooltip]').tooltip({container:'body'});
 
@@ -242,30 +243,10 @@ use app\models\Task;
             });
         }
 
-        // 获取commit log
-        function getCommitList() {
-            $('.get-history').show();
-            $.get("<?= Url::to('@web/walle/get-commit-history?projectId=') ?>" + projectId + "&branch=" + $('#branch').val(), function (data) {
-                // 获取commit log失败
-                if (data.code) {
-                    showError(data.msg);
-                }
-
-                var select = '';
-                $.each(data.data, function (key, value) {
-                    select += '<option value="' + value.id + '">' + value.id + ' - ' + value.author + ' : ' + value.message + '</option>';
-                });
-                $('#task-commit_id').html(select);
-                $('.get-history').hide()
-            });
-        }
-
         // 获取两次commit之间更新的内容
         function getCommitBetweenList() {
             // 还需获取最新记录和最后提交的记录
-            var startNum=2950;
-            var endNum=2982;
-            $.get("<?= Url::to('@web/walle/get-commit-file-json?projectId=') ?>" + projectId + "&start=" + startNum + "&end=" + endNum + "&branch=" + $('#branch').val(), function (data) {
+            $.get("<?= Url::to('@web/walle/get-commit-file-json?projectId=') ?>" + projectId + "&start=&end=" + lastCommitId + "&branch=" + $('#branch').val(), function (data) {
                 // 获取失败
                 if (data.code) {
                     showError(data.msg);
@@ -288,11 +269,27 @@ use app\models\Task;
                     }]);
                 }
                 selectableNodes = findSelectableNodes();
-//                var filePath='';
-//                $.each(data.data, function () {
-//                    filePath += this + '\n';
-//                });
-//                $('#task-commit_file_list').val(filePath);
+            });
+        }
+
+        // 获取commit log
+        function getCommitList() {
+            $('.get-history').show();
+            $.get("<?= Url::to('@web/walle/get-commit-history?projectId=') ?>" + projectId + "&branch=" + $('#branch').val(), function (data) {
+                // 获取commit log失败
+                if (data.code) {
+                    showError(data.msg);
+                }
+
+                var select = '';
+                $.each(data.data, function (key, value) {
+                    select += '<option value="' + value.id + '">' + value.id + ' - ' + value.author + ' : ' + value.message + '</option>';
+                });
+                lastCommitId = data.data[0].id;
+                $('#task-commit_id').html(select);
+                $('.get-history').hide();
+                // 页面加载完默认拉取项目最后一次commit和最新一次commit之间的文件列表
+                getCommitBetweenList();
             });
         }
 
@@ -304,9 +301,6 @@ use app\models\Task;
 
         // 页面加载完默认拉取master的commit log
         getCommitList();
-
-        // 页面加载完默认拉取项目最后一次commit和最新一次commit之间的文件列表
-        getCommitBetweenList();
 
         // 查看所有分支提示
         $('.show-tip')
