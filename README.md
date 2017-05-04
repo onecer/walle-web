@@ -43,7 +43,7 @@ That's all. It's base package of PHP environment!
 Installation
 ------------
 ```
-git clone git@github.com:meolu/walle-web.git
+git clone https://github.com/onecer/walle-web.git
 cd walle-web
 vi config/web.php # set up module db mysql connection info
 composer install  # error cause by bower-asset, install：composer global require "fxp/composer-asset-plugin:*"
