@@ -297,16 +297,12 @@ class Svn extends Command {
      */
     private function _pushNode($subtree,$name){
         if(!empty($name)){
-            if(array_key_exists(end($name),$subtree)){
-                $tmpname=end($name);
-                array_pop($name);
-                $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname],$name);
-            }else {
-                $tmpname=end($name);
-                array_pop($name);
+            $tmpname=end($name);
+            if(!array_key_exists(end($name),$subtree)){
                 $subtree[$tmpname]=array();
-                $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname], $name);
             }
+            array_pop($name);
+            $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname],$name);
             return $subtree;
         }
     }

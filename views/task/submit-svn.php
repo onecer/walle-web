@@ -68,12 +68,12 @@ use app\models\Task;
           </div>
           <!-- 全量/增量 end -->
           <!-- 控制区 -->
-          <div class="row">
-              <div class="col-sm-4">
+          <div class="row" style="display: none;" id="task-part_update">
+              <div class="col-sm-6">
                   <div class="row"><label class="control-label bolder blue" style="display: inline-block;">搜索更改文件</label></div>
                   <div class="row">
                       <div class="row">
-                          <div class="col-sm-8">
+                          <div class="col-sm-6">
                               <div class="form-group">
                                   <label for="input-select-node" class="sr-only">Search Tree:</label>
                                   <input type="input" class="form-control input-lg" id="input-select-node" placeholder="关键词" value="">
@@ -89,6 +89,11 @@ use app\models\Task;
                                   <button type="button" class="btn btn-danger select-node" id="btn-unselect-node">取消</button>
                               </div>
                           </div>
+                          <div class="col-sm-2">
+                              <div class="form-group">
+                                  <button type="button" class="btn btn-primary select-node" id="btn-add-selected" >添加选定</button>
+                              </div>
+                          </div>
                       </div>
                   </div>
                   <div class="row"><label class="control-label bolder blue" style="display: inline-block;">更改文件目录树</label></div>
@@ -97,26 +102,11 @@ use app\models\Task;
                   </div>
 
               </div>
-              <div class="col-sm-2"><button type="button" class="btn btn-primary select-node" id="btn-add-selected" >添加选定</button></div>
               <div class="col-sm-6">
-                  <div class="row"><label class="control-label bolder blue" style="display: inline-block;">增量更新文件列表</label></div>
-                  <div class="row"><textarea id="commit-update-list" name="commit-update-list" class="form-control" id="" cols="30" rows="15"></textarea></div>
-              </div>
-          </div>
-          <!-- 两次提交的文件列表 -->
-          <div class="row" id="task-part_block" style="display: none">
-              <div class="col-xs-5">
-                  <label class="control-label bolder blue" style="display: inline-block;">Commit文件列表</label>
-                  <textarea id="task-commit_file_list" class="form-control" rows="12" placeholder="" data-html="true" data-placement="top" data-rel="tooltip" data-title="commit历史列表"></textarea>
-              </div>
-              <div class="col-xs-2">
-                  <a href="#"><img src="http://placehold.it/150x350"></a>
-              </div>
-              <div class="col-xs-5">
                   <!-- 文件列表 -->
                   <?= $form->field($task, 'file_list')
                       ->textarea([
-                          'rows'           => 12,
+                          'rows'           => 20,
                           'placeholder'    => "index.php\nREADME.md\ndir_name\nfile*",
                           'data-html'      => 'true',
                           'data-placement' => 'top',
@@ -160,10 +150,7 @@ use app\models\Task;
 <script src="/dist/js/bootstrap-treeview.min.js"></script>
 <script>
     var $selectableTree;
-
     var initSelectableTree;
-
-
     var findSelectableNodes;
     var selectableNodes;
 
@@ -204,12 +191,12 @@ use app\models\Task;
         for(var o in selectData){
 //            if("parentId" in selectJson[o]){
             if(selectData[o].parentId!==undefined){
-                filelists = filelists + getPathByNodeId(selectData[o].nodeId) + "/" +selectData[o].text + "\r\n";
+                filelists = filelists + getPathByNodeId(selectData[o].nodeId) + "/" +selectData[o].text + "\n";
             }else{
-                filelists = filelists + selectData[o].text + "\r\n";
+                filelists = filelists + selectData[o].text + "\n";
             }
         }
-        $('#commit-update-list').val(filelists);
+        $('#task-file_list').val(filelists);
     });
 
 </script>
@@ -287,6 +274,7 @@ use app\models\Task;
                 initSelectableTree = function() {
                     return $('#treeview-selectable').treeview({
                         data: tree,
+                        "emptyIcon":"icon-file-alt",
                         "expandIcon":"icon-folder-close-alt",
                         "collapseIcon":"icon-folder-open-alt",
                         multiSelect: true
@@ -354,11 +342,13 @@ use app\models\Task;
 
         // 切换显示文件列表
         $('body').on('click', '#transmission-full-ctl', function() {
-            $('#task-part_block').hide();
+//            $('#task-part_block').hide();
+            $('#task-part_update').hide();
             $('#task-file_list').hide();
             $('label[for="task-file_list"]').hide();
         }).on('click', '#transmission-part-ctl', function() {
-            $('#task-part_block').show();
+//            $('#task-part_block').show();
+            $('#task-part_update').show();
             $('#task-file_list').show();
             $('label[for="task-file_list"]').show();
         });
