@@ -102,8 +102,8 @@ use app\models\User;
                           </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal"><?= yii::t('user', 'btn cancel') ?></button>
-                        <button type="button" class="btn btn-primary btn-submit"><?= yii::t('w', 'bnt sure') ?></button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?= yii::t('w', 'btn cancel') ?></button>
+                        <button type="button" class="btn btn-primary btn-submit"><?= yii::t('w', 'btn sure') ?></button>
                     </div>
                 </div>
             </div>
