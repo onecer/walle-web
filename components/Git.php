@@ -10,6 +10,7 @@ namespace app\components;
 
 use app\models\Project;
 use app\models\Task as TaskModel;
+use yii\helpers\StringHelper;
 
 class Git extends Command {
 
@@ -160,6 +161,109 @@ class Git extends Command {
             ];
         }
         return $history;
+    }
+
+    /**
+     * 获取commits之间的文件
+     * @param $branch
+     * @param $star
+     * @param $end
+     * @return array
+     * @throws \Exception
+     * @author YYY <ldh@qq.com>
+     */
+    public function getFileBetweenCommits($branch, $star, $end){
+        // 先更新
+        $destination = Project::getDeployFromDir();
+        $this->updateRepo($branch, $destination);
+        $cmd[] = sprintf('cd %s',$destination);
+        $cmd[] = sprintf('/usr/bin/env git checkout %s',$branch);
+        $cmd[] = sprintf('/usr/bin/env git diff %s %s --name-only', $star, $end);
+        $command = join(' && ', $cmd);
+        $result = $this->runLocalCommand($command);
+//        var_dump($command,$this->getExeLog());exit();
+        if (!$result) {
+            throw new \Exception(\yii::t('walle', 'get commit log failed') . $this->getExeLog());
+        }
+
+        $list = [];
+        $files = StringHelper::explode($this->getExeLog(), PHP_EOL);
+        $files = array_map(function($item) {
+            return trim(substr($item, strpos($item, " ")));
+        }, $files);
+        // 排除点文件
+        if (in_array('.', $files)) {
+            unset($files[array_search('.', $files)]);
+        }
+        foreach ($files as $key => $file) {
+            // 如果是目录，则目录下的文件则可以不带了
+            if (in_array(dirname($file), $files)) continue;
+            $list[] = $file;
+        }
+
+        return $list;
+    }
+
+    /**
+     * 将文件列表制作成json
+     * @param $branch
+     * @param $star
+     * @param $end
+     * @return string
+     * @author YYY <ldh@qq.com>
+     */
+    public function getFileBetweenCommitsJson($branch, $star, $end) {
+        // 先获取更新列表
+        $tree=array();
+        $list=$this->getFileBetweenCommits($branch, $star, $end);
+        for($i=0;$i<count($list);$i++){
+            if(!empty($list[$i])){
+                $path_str=array_reverse(explode('/', $list[$i]));
+                $tree = $this->_pushNode($tree,$path_str);
+            }
+        }
+        $json = $this->_makeCommitFilesTreeviewJson($tree);
+        return json_encode($json);
+    }
+
+    /**
+     * 递归生成树的数组
+     * @param $subtree
+     * @param $name
+     * @return mixed
+     * @author YYY <ldh@qq.com>
+     */
+    private function _pushNode($subtree,$name){
+        if(!empty($name)){
+            $tmpname=end($name);
+            if(!array_key_exists(end($name),$subtree)){
+                $subtree[$tmpname]=array();
+            }
+            array_pop($name);
+            $subtree[$tmpname]=$this->_pushNode($subtree[$tmpname],$name);
+            return $subtree;
+        }
+    }
+
+    /**
+     * 根据列表返回json
+     * @param $tree
+     * @return array
+     * @author YYY <ldh@qq.com>
+     */
+    private function _makeCommitFilesTreeviewJson($tree){
+        $json=[];
+        if(!empty($tree)){
+            foreach ($tree as $key => $value){
+                $jsonNode=[];
+                $jsonNode['text']=$key;
+                if($value!==null){
+                    $jsonNode['nodes']=$this->_makeCommitFilesTreeviewJson($value);
+                }
+                array_push($json,$jsonNode);
+            }
+        }
+        return $json;
     }
 
 }

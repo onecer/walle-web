@@ -290,10 +290,11 @@ class Svn extends Command {
     }
 
     /**
-     * 递归创建树
+     * 递归生成树的数组
      * @param $subtree
      * @param $name
-     * @return array
+     * @return mixed
+     * @author YYY <ldh@qq.com>
      */
     private function _pushNode($subtree,$name){
         if(!empty($name)){
@@ -308,8 +309,10 @@ class Svn extends Command {
     }
 
     /**
+     * 根据列表返回json
      * @param $tree
      * @return array
+     * @author YYY <ldh@qq.com>
      */
     private function _makeCommitFilesTreeviewJson($tree){
         $json=[];
