@@ -338,16 +338,24 @@ class WalleController extends Controller
     }
 
     /**
-     * 获取commit之间的文件JSON
-     *
+     * 获取两次提交文件的差异文件列表
      * @param $projectId
+     * @param $start
+     * @param $end
+     * @param string $branch
+     * @author YYY <ldh@qq.com>
      */
     public function actionGetCommitFileJson($projectId, $start, $end, $branch = 'trunk')
     {
         $conf = Project::getConf($projectId);
         $revision = Repo::getRevision($conf);
         $start = !empty($start) ? $start : TaskModel::find()->select('commit_id')->where(['project_id'=>$projectId])->orderBy(['id'=>SORT_DESC])->limit(1)->scalar();
-        $list = $revision->getFileBetweenCommitsJson($branch, $start, $end);
+        if ($conf->repo_mode == Project::REPO_MODE_TAG && $conf->repo_type == Project::REPO_GIT) {
+            $list = $revision->getFileBetweenCommitsJson($end, $start, $end);
+        } else {
+            $list = $revision->getFileBetweenCommitsJson($branch, $start, $end);
+        }
+
         $this->renderJson($list);
     }
 
