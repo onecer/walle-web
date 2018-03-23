@@ -12,18 +12,13 @@ COPY docker/apache2.conf /etc/apache2/apache2.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 
 WORKDIR /opt/walle-web
-# RUN curl -sS https://getcomposer.org/installer | php \
-#       && mv composer.phar /usr/local/bin/composer \
-#       && chmod +x /usr/local/bin/composer
 RUN curl -sS https://install.phpcomposer.com/installer | php \
       && mv composer.phar /usr/local/bin/composer \
       && chmod +x /usr/local/bin/composer
 RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com && composer config repo.packagist composer https://packagist.phpcomposer.com
 RUN composer install
-# --prefer-dist --no-dev --optimize-autoloader -vvvv
 RUN chmod +x /entrypoint.sh && \
     chown -R www-data:www-data /opt/walle-web
-
 EXPOSE 80
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
